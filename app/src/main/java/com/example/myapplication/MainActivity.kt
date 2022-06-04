@@ -21,51 +21,33 @@ class MainActivity : AppCompatActivity() {
         title = "Rick and Morty"
         listView = findViewById(R.id.persons_list)
         requestQueue = Volley.newRequestQueue(this)
-        jsonParse()
-
+        method()
     }
-    private fun jsonParse() {
-        val url = "https://rickandmortyapi.com/api/character"
-        val request = JsonObjectRequest(Request.Method.GET, url, null, {
-                response ->try {
-            val jsonArray = response.getJSONArray("results")
-            val listItems = arrayOfNulls<String>(jsonArray.length())
-            for (i in 0 until jsonArray.length()) {
-                val character = jsonArray.getJSONObject(i)
-                val name = character.getString("name")
-                val gender = character.getString("gender")
-                listItems[i] = "$name\n\nGender: $gender"
-            }
 
-            val adapter = ArrayAdapter(
-                this,
-                android.R.layout.simple_list_item_1, listItems
-            )
-            listView.adapter = adapter
+   // JSONParse.jsonParse()
 
+private fun method() {
+    val o = JSONParse()
+    o.jsonParse()
+    val adapter = ArrayAdapter(
+        this,
+        android.R.layout.simple_list_item_1, o.listItems
+    )
+    listView.adapter = adapter
 
+    listView.onItemClickListener =
+        OnItemClickListener { parent, itemClicked, position, id ->
+            Toast.makeText(
+                applicationContext, (itemClicked as TextView).text,
+                Toast.LENGTH_SHORT
+            ).show()
+            val intent = Intent(this@MainActivity, InfoActivity::class.java)
+            intent.putExtra("testId", position)
 
-
-
-
-           listView.onItemClickListener =
-               OnItemClickListener { parent, itemClicked, position, id ->
-                   Toast.makeText(
-                       applicationContext, (itemClicked as TextView).text,
-                       Toast.LENGTH_SHORT
-                   ).show()
-                   val intent = Intent(this@MainActivity, InfoActivity::class.java)
-                   intent.putExtra("testId", position)
-
-                   startActivity(intent)
-               }
-
-        } catch (e: JSONException) {
-            e.printStackTrace()
+            startActivity(intent)
         }
-        }, { error -> error.printStackTrace() })
-        requestQueue?.add(request)
-    }
 
+
+}
 
 }
