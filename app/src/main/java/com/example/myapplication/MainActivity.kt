@@ -27,13 +27,9 @@ class MainActivity : AppCompatActivity() {
    // JSONParse.jsonParse()
 
 private fun method() {
-    val o = JSONParse()
+    val o = JSONParse(listView, this)
     o.jsonParse()
-    val adapter = ArrayAdapter(
-        this,
-        android.R.layout.simple_list_item_1, o.listItems
-    )
-    listView.adapter = adapter
+
 
     listView.onItemClickListener =
         OnItemClickListener { parent, itemClicked, position, id ->
