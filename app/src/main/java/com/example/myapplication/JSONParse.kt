@@ -11,22 +11,35 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.example.myapplication.JSONParse.SignalChange.property1
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.properties.Delegates
 
-class JSONParse (val array : ListView, val context : Context){
+class JSONParse (val activity: MainActivity) {
 
 //var listItems = arrayOfNulls<String>(17)
+var array  = arrayOfNulls<String?>(19)
+    object SignalChange {
+        var refreshListListeners = ArrayList<() -> Unit>()
 
-
+        // fires off every time value of the property changes
+        var property1: String by Delegates.observable("initial value") { property, oldValue, newValue ->
+            // do your stuff here
+            refreshListListeners.forEach {
+                it()
+            }
+        }
+    }
     fun jsonParse(){
-        val requestQueue = Volley.newRequestQueue(context)
-    val url = "https://rickandmortyapi.com/api/character"
+
+        val url = "https://rickandmortyapi.com/api/character"
         Log.d("teg", "listItems[i].toString()")
         val request = JsonObjectRequest(Request.Method.GET, url, null, {
                 response ->try {
             val jsonArray = response.getJSONArray("results")
             val listItems = arrayOfNulls<String>(jsonArray.length())
+            array = listItems
 
             for (i in 0 until jsonArray.length()) {
                 val character = jsonArray.getJSONObject(i)
@@ -35,18 +48,14 @@ class JSONParse (val array : ListView, val context : Context){
                 listItems[i] = "$name\n\nGender: $gender"
                 Log.d("teg", listItems[i].toString())
             }
+            property1 = "change"
 
-            val adapter = ArrayAdapter(
-                context,
-                android.R.layout.simple_list_item_1, listItems
-            )
-            array.adapter = adapter
         } catch (e: JSONException) {
             e.printStackTrace()
         }
         }, { error -> error.printStackTrace()})
-        requestQueue.add(request)
-}
+        activity.requestQueue?.add(request)
+    }
 
 
 }
