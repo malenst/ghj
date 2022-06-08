@@ -9,9 +9,11 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Listener {
+
     private lateinit var listView: ListView
     var requestQueue: RequestQueue? = null
+    lateinit var o: JSONParse
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -19,17 +21,16 @@ class MainActivity : AppCompatActivity() {
         listView = findViewById(R.id.persons_list)
         requestQueue = Volley.newRequestQueue(this)
         method()
+
     }
 
     // JSONParse.jsonParse()
 
     private fun method() {
 
-        val o = JSONParse(this)
+        o = JSONParse(requestQueue)
+        o.addListener(this)
         o.jsonParse()
-        JSONParse.SignalChange.refreshListListeners.add { refreshList(o) }
-
-
 
         listView.onItemClickListener =
             OnItemClickListener { parent, itemClicked, position, id ->
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun refreshList(o: JSONParse) {
+    override fun parsingFinished() {
         val listItems = o.array
         val adapter = ArrayAdapter(
             this,

@@ -11,26 +11,18 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.example.myapplication.JSONParse.SignalChange.property1
 import org.json.JSONException
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
-class JSONParse (val activity: MainActivity) {
+class JSONParse (val requestQueue: RequestQueue?) {
+
+  private   var listener = WeakReference<Listener>(null)
 
 //var listItems = arrayOfNulls<String>(17)
 var array  = arrayOfNulls<String?>(19)
-    object SignalChange {
-        var refreshListListeners = ArrayList<() -> Unit>()
 
-        // fires off every time value of the property changes
-        var property1: String by Delegates.observable("initial value") { property, oldValue, newValue ->
-            // do your stuff here
-            refreshListListeners.forEach {
-                it()
-            }
-        }
-    }
     fun jsonParse(){
 
         val url = "https://rickandmortyapi.com/api/character"
@@ -48,14 +40,17 @@ var array  = arrayOfNulls<String?>(19)
                 listItems[i] = "$name\n\nGender: $gender"
                 Log.d("teg", listItems[i].toString())
             }
-            property1 = "change"
+            listener.get()?.parsingFinished()
 
         } catch (e: JSONException) {
             e.printStackTrace()
         }
         }, { error -> error.printStackTrace()})
-        activity.requestQueue?.add(request)
+        requestQueue?.add(request)
+        listener.get()?.parsingFinished()
     }
 
-
+    fun addListener(listener : Listener) {
+        this.listener = WeakReference(listener)
+    }
 }
