@@ -16,9 +16,9 @@ import org.json.JSONObject
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
-class JSONParse (val requestQueue: RequestQueue?) {
+class JSONParse (val requestQueue: RequestQueue?,var modelParse: ViewModelParse) {
 
-  private   var listener = WeakReference<Listener>(null)
+  //private   var listener = WeakReference<Listener>(null)
 
 //var listItems = arrayOfNulls<String>(17)
 var array  = arrayOfNulls<String?>(19)
@@ -40,17 +40,17 @@ var array  = arrayOfNulls<String?>(19)
                 listItems[i] = "$name\n\nGender: $gender"
                 Log.d("teg", listItems[i].toString())
             }
-            listener.get()?.parsingFinished()
-
+            //listener.get()?.parsingFinished()
+            modelParse.update(listItems)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
         }, { error -> error.printStackTrace()})
         requestQueue?.add(request)
-        listener.get()?.parsingFinished()
+        //  listener.get()?.parsingFinished()
     }
 
     fun addListener(listener : Listener) {
-        this.listener = WeakReference(listener)
+        //this.listener = WeakReference(listener)
     }
 }

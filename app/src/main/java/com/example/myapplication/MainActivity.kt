@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 
@@ -28,8 +30,20 @@ class MainActivity : AppCompatActivity(), Listener {
 
     private fun method() {
 
-        o = JSONParse(requestQueue)
-        o.addListener(this)
+        val observer = Observer<Array<String?>> { array ->
+            val listItems = array
+            val adapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_list_item_1, listItems
+            )
+            listView.adapter = adapter
+        }
+
+        val model: ViewModelParse by viewModels()
+        model.listItems.observe(this, observer)
+
+        o = JSONParse(requestQueue, model)
+        //o.addListener(this)
         o.jsonParse()
 
         listView.onItemClickListener =
@@ -48,11 +62,6 @@ class MainActivity : AppCompatActivity(), Listener {
     }
 
     override fun parsingFinished() {
-        val listItems = o.array
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1, listItems
-        )
-        listView.adapter = adapter
+
     }
 }
