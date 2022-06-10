@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity(), Listener {
 
     }
 
-    // JSONParse.jsonParse()
 
     private fun method() {
 
@@ -41,10 +40,9 @@ class MainActivity : AppCompatActivity(), Listener {
 
         val model: ViewModelParse by viewModels()
         model.listItems.observe(this, observer)
+        model.init(requestQueue)
 
         o = JSONParse(requestQueue, model)
-        //o.addListener(this)
-        o.jsonParse()
 
         listView.onItemClickListener =
             OnItemClickListener { parent, itemClicked, position, id ->
@@ -62,6 +60,7 @@ class MainActivity : AppCompatActivity(), Listener {
     }
 
     override fun parsingFinished() {
-
+        TODO("Not yet implemented")
     }
+
 }
